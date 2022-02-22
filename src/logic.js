@@ -51,32 +51,6 @@ function move(gameState) {
         possibleMoves.up = false
     }
 
-    /* Don't hit walls. */
-    const boardWidth = gameState.board.width
-    const boardHeight = gameState.board.height
-
-    // If myHead.x is at the beginning of the x axis,
-    // turn off "left" as possible move.
-    if ( myHead.x === 0 ) {
-      possibleMoves.left = false
-    // If myHead.x is at the end of the x axis,
-    // turn off "right" as possible move.
-    } else if ( myHead.x === gameState.board.width - 1 ) {
-      possibleMoves.right = false
-    }
-    // If myHead.y is at the beginning of the y axis,
-    // turn off "down" as possible move.
-    if ( myHead.y === 0 ) {
-      possibleMoves.down = false
-    // If myHead.y is at the end of the y axis,
-    // turn off "up" as possible move.
-    } else if ( myHead.y === gameState.board.height - 1 ) {
-      possibleMoves.up = false
-    }
-
-    console.log(possibleMoves)
-    console.log(numberOfEnabledMoves())
-
     /* Don't hit yourself. */
     // Use information in gameState to prevent your Battlesnake from colliding with itself.
     const myBody = gameState.you.body
