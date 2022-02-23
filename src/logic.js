@@ -151,11 +151,12 @@ function move(gameState) {
     // Filter out food in hazard sauce.
     food = food.filter((snack) => {
       const hazards = gameState.board.hazards;
+      console.log(hazards);
       for (let i = 0; i < hazards.length; i++) {
         if (JSON.stringify(hazards[i]) === JSON.stringify(snack)) {
-          return false;
+          return true;
         }
-        return true;
+        return false;
       }
     });
 
