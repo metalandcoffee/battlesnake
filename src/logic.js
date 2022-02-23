@@ -131,7 +131,7 @@ function move(gameState) {
     });
 
     if (safeFood.length !== 0) {
-      food = safefood;
+      food = safeFood;
     }
 
     // Sort all food from closest to furthest.
