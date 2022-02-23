@@ -84,6 +84,9 @@ function move(gameState) {
       if (yDistFrom > gameState.board.height / 2) {
         yDistFrom = gameState.board.height - yDistFrom;
       }
+      console.log(myBody[i])
+      console.log(`xDistFrom ${xDistFrom}`)
+      console.log(`yDistFrom ${yDistFrom}`)
       const distFrom = xDistFrom + yDistFrom;
 
       if (distFrom < 2) {
@@ -91,6 +94,10 @@ function move(gameState) {
       }
     }
   }
+
+  console.log(`after don't hit yourself logic`);
+  console.log(possibleMoves);
+  console.log(numberOfEnabledMoves());
 
   /* Avoid loser snake heads that are adjacent to possible moves. */
   // If losersnake's head is 1 distance away from one of my possible moves, disable move.
