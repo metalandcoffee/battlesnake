@@ -22,8 +22,6 @@ function move(gameState) {
   const myHead = gameState.you.head;
   const myNeck = gameState.you.body[1];
 
-  console.log(gameState);
-
   let possibleMoves = {
     up: true,
     down: true,
@@ -102,6 +100,7 @@ function move(gameState) {
         yDistFrom = gameState.board.height - yDistFrom;
       }
       const distFrom = xDistFrom + yDistFrom;
+      console.log(`distfrom ${distFrom}`);
 
       tmp[JSON.stringify(loserSnakes[i])] = { x: xDistFrom, y: yDistFrom };
       if (distFrom < 2) {
