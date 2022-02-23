@@ -22,8 +22,6 @@ function move(gameState) {
   const myHead = gameState.you.head;
   const myNeck = gameState.you.body[1];
 
-  console.log(gameState.board.hazards);
-
   let possibleMoves = {
     up: true,
     down: true,
@@ -43,7 +41,7 @@ function move(gameState) {
     right: { x: myHead.x + 1, y: myHead.y },
   };
 
-  // Don't let your Battlesnake move back on its own neck
+  /* Don't let your Battlesnake move back on its own neck */
   if (myNeck.x < myHead.x) {
     possibleMoves.left = false;
   } else if (myNeck.x > myHead.x) {
@@ -70,7 +68,7 @@ function move(gameState) {
   console.log(possibleMoves);
   console.log(numberOfEnabledMoves());
 
-  // Step 3 - Don't collide with others.
+  /* Don't collide with others. */
   // Use information in gameState to prevent your Battlesnake from colliding with others.
   const loserSnakes = gameState.board.snakes.map((snake) => snake.body);
   for (let snakeParts of loserSnakes) {
@@ -89,7 +87,22 @@ function move(gameState) {
   console.log(possibleMoves);
   console.log(numberOfEnabledMoves());
 
-  // Step 4 - Find food.
+  /* Avoid hazard sauce. */
+  if (numberOfEnabledMoves() > 1) {
+    const hazards = gameState.board.hazards;
+    for (let i = 0; i < hazards.length; i++) {
+      for (const direction in moveLookAhead) {
+        if (
+          JSON.stringify(hazards[i]) ===
+          JSON.stringify(moveLookAhead[direction])
+        ) {
+          possibleMoves[direction] = false;
+        }
+      }
+    }
+  }
+
+  /* Find food */
   // Use information in gameState to seek out and find food.
   const food = gameState.board.food;
 
