@@ -122,24 +122,25 @@ function move(gameState) {
     food.sort((a, b) => {
       // Find total steps needed from myHead to aFood and to bFood. This is logic specifically trailored for Wrapped mode.
 
-      // Find distance to get to Food A.
-      let xDistFromA = Math.abs(myHead.x - a.x);
+      // Find distance to get to Food A. myhead {x:7,y:6} food {x:0,y:8}
+      let xDistFromA = Math.abs(myHead.x - a.x); //7
       if (xDistFromA > gameState.board.width / 2) {
-        xDistFromA = gameState.board.width / 2 - xDistFromA;
+        //11/2 = 5.5
+        xDistFromA = gameState.board.width - xDistFromA;
       }
       let yDistFromA = Math.abs(myHead.y - a.y);
       if (yDistFromA > gameState.board.height / 2) {
-        yDistFromA = gameState.board.height / 2 - yDistFromA;
+        yDistFromA = gameState.board.height - yDistFromA;
       }
 
       // Find distance to get to Food B.
       let xDistFromB = Math.abs(myHead.x - b.x);
       if (xDistFromB > gameState.board.width / 2) {
-        xDistFromB = gameState.board.width / 2 - xDistFromB;
+        xDistFromB = gameState.board.width - xDistFromB;
       }
       let yDistFromB = Math.abs(myHead.y - b.y);
       if (yDistFromB > gameState.board.height / 2) {
-        yDistFromB = gameState.board.height / 2 - yDistFromB;
+        yDistFromB = gameState.board.height - yDistFromB;
       }
 
       tmp[JSON.stringify(a)] = { x: xDistFromA, y: yDistFromA };
