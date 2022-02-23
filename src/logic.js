@@ -84,6 +84,24 @@ function move(gameState) {
 
   /* Avoid loser snake heads that are adjacent to possible moves... */
   // If loser snakehead is 1 distance away from one of my possible moves, disable move.
+  const loserSnakes = gameState.board.snakes.map((snake) => snake.head);
+  for (let i = 0; i < loserSnakes.length; i++) {
+    for (const direction in moveLookAhead) {
+      // Find distance from possible move to loser snake's head.
+      let xDistFrom = Math.abs(possibleMoves[direction].x - loserSnakes[i].x);
+      if (xDistFrom > gameState.board.width / 2) {
+        xDistFrom = gameState.board.width - xDistFrom;
+      }
+      let yDistFrom = Math.abs(possibleMoves[direction].y - loserSnakes[i].y);
+      if (yDistFrom > gameState.board.height / 2) {
+        yDistFrom = gameState.board.height - yDistFrom;
+      }
+      const distFrom = xDistFrom + yDistFrom;
+      if (distFrom < 2) {
+        possibleMoves[direction] = false;
+      }
+    }
+  }
 
   // console.log(`after don't hit yourself logic`);
   // console.log(possibleMoves);
