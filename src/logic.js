@@ -22,7 +22,7 @@ function move(gameState) {
   const myHead = gameState.you.head;
   const myNeck = gameState.you.body[1];
 
-  console.log(gameState);
+  console.log(gameState.board.hazards);
 
   let possibleMoves = {
     up: true,
