@@ -22,6 +22,8 @@ function move(gameState) {
   const myHead = gameState.you.head;
   const myNeck = gameState.you.body[1];
 
+  console.log(gameState);
+
   let possibleMoves = {
     up: true,
     down: true,
@@ -67,10 +69,6 @@ function move(gameState) {
     possibleMoves.up = false;
   }
 
-  // console.log(`after don't move back on your neck logic`);
-  // console.log(possibleMoves);
-  // console.log(numberOfEnabledMoves());
-
   /* Don't hit yourself. */
   // Use information in gameState to prevent your Battlesnake from colliding with itself.
   const myBody = gameState.you.body;
@@ -83,6 +81,9 @@ function move(gameState) {
       }
     }
   }
+
+  /* Avoid loser snake heads that are adjacent to possible moves... */
+  // If loser snakehead is 1 distance away from one of my possible moves, disable move.
 
   // console.log(`after don't hit yourself logic`);
   // console.log(possibleMoves);
