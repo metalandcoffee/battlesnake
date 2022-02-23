@@ -53,9 +53,6 @@ function move(gameState) {
     },
   };
 
-  // console.log(myHead);
-  // console.log(moveLookAhead);
-
   /* Don't let your Battlesnake move back on its own neck */
   if (myNeck.x < myHead.x) {
     possibleMoves.left = false;
@@ -80,20 +77,15 @@ function move(gameState) {
     }
   }
 
-  console.log(`after dont hit yourself logic`);
-  console.log(possibleMoves);
-  console.log(numberOfEnabledMoves());
-
   /* Avoid loser snake heads that are adjacent to possible moves... */
   // If loser snakehead is 1 distance away from one of my possible moves, disable move.
   let loserSnakes = gameState.board.snakes.map((snake) => snake.head);
   console.log(`snake head locations`);
   console.log(loserSnakes);
-  let tmp = {};
+
   for (let i = 0; i < loserSnakes.length; i++) {
     for (const direction in moveLookAhead) {
-      console.log(loserSnakes[i]);
-      console.log(moveLookAhead[direction]);
+      // Exclude my own head from calculations.
       if (JSON.stringify(loserSnakes[i]) === JSON.stringify(myHead)) {
         continue;
       }
@@ -107,7 +99,6 @@ function move(gameState) {
         yDistFrom = gameState.board.height - yDistFrom;
       }
       const distFrom = xDistFrom + yDistFrom;
-      console.log(`distfrom ${distFrom}`);
 
       tmp[JSON.stringify(loserSnakes[i])] = { x: xDistFrom, y: yDistFrom };
       if (distFrom < 2) {
@@ -115,11 +106,6 @@ function move(gameState) {
       }
     }
   }
-
-  console.log(tmp);
-  console.log(`after avoid possible head-to-head logic`);
-  console.log(possibleMoves);
-  console.log(numberOfEnabledMoves());
 
   /* Don't collide with others. */
   // Use information in gameState to prevent your Battlesnake from colliding with others.
@@ -153,7 +139,7 @@ function move(gameState) {
     //let tmp = {};
 
     // Filter out food in hazard sauce.
-    const safeFood = food.filter((snack) => {
+    food = food.filter((snack) => {
       const hazards = gameState.board.hazards;
       for (let i = 0; i < hazards.length; i++) {
         if (JSON.stringify(hazards[i]) === JSON.stringify(snack)) {
@@ -163,9 +149,12 @@ function move(gameState) {
       }
     });
 
-    if (safeFood.length !== 0) {
-      food = safeFood;
-    }
+    console.log(`safe food`);
+    console.log(food);
+
+    // if (safeFood.length !== 0) {
+    //   food = safeFood;
+    // }
 
     // Sort all food from closest to furthest.
     food.sort((a, b) => {
