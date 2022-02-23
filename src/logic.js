@@ -117,15 +117,30 @@ function move(gameState) {
     console.log(`before find food logic`);
     console.log(`food`);
     console.log(food);
-    let tmp = {};
+    //let tmp = {};
+
+    // Filter out food in hazard sauce.
+    const safeFood = food.filter((snack) => {
+      const hazards = gameState.board.hazards;
+      for (let i = 0; i < hazards.length; i++) {
+        if (JSON.stringify(hazards[i]) === JSON.stringify(snack)) {
+          return false;
+        }
+        return true;
+      }
+    });
+
+    if (safeFood.length !== 0) {
+      food = safefood;
+    }
+
     // Sort all food from closest to furthest.
     food.sort((a, b) => {
       // Find total steps needed from myHead to aFood and to bFood. This is logic specifically trailored for Wrapped mode.
 
-      // Find distance to get to Food A. myhead {x:7,y:6} food {x:0,y:8}
-      let xDistFromA = Math.abs(myHead.x - a.x); //7
+      // Find distance to get to Food A.
+      let xDistFromA = Math.abs(myHead.x - a.x);
       if (xDistFromA > gameState.board.width / 2) {
-        //11/2 = 5.5
         xDistFromA = gameState.board.width - xDistFromA;
       }
       let yDistFromA = Math.abs(myHead.y - a.y);
@@ -143,15 +158,15 @@ function move(gameState) {
         yDistFromB = gameState.board.height - yDistFromB;
       }
 
-      tmp[JSON.stringify(a)] = { x: xDistFromA, y: yDistFromA };
-      tmp[JSON.stringify(b)] = { x: xDistFromB, y: yDistFromB };
+      //tmp[JSON.stringify(a)] = { x: xDistFromA, y: yDistFromA };
+      //tmp[JSON.stringify(b)] = { x: xDistFromB, y: yDistFromB };
 
       const aDistanceToMe = xDistFromA + yDistFromA;
       const bDistanceToMe = xDistFromB + yDistFromB;
       return aDistanceToMe - bDistanceToMe;
     });
 
-    console.log(tmp);
+    //console.log(tmp);
 
     // Get closest food and disable moves as needed.
     const closestFood = food[0];
