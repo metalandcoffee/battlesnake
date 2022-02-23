@@ -65,6 +65,7 @@ function move(gameState) {
     }
   }
 
+  console.log(`after don't hit yourself logic`);
   console.log(possibleMoves);
   console.log(numberOfEnabledMoves());
 
@@ -84,6 +85,7 @@ function move(gameState) {
     }
   }
 
+  console.log(`after don't hit others logic`);
   console.log(possibleMoves);
   console.log(numberOfEnabledMoves());
 
@@ -101,6 +103,10 @@ function move(gameState) {
       }
     }
   }
+
+  console.log(`after avoid hazard sauce logic`);
+  console.log(possibleMoves);
+  console.log(numberOfEnabledMoves());
 
   /* Find food */
   // Use information in gameState to seek out and find food.
@@ -156,6 +162,7 @@ function move(gameState) {
     }
   }
 
+  console.log(`after find food logic`);
   console.log(possibleMoves);
   console.log(numberOfEnabledMoves());
   // TODO: Step 5 - Select a move to make based on strategy, rather than random.
