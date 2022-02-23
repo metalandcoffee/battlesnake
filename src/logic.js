@@ -77,19 +77,17 @@ function move(gameState) {
     }
   }
 
-  /* Avoid loser snake heads that are adjacent to possible moves... */
-  // If loser snakehead is 1 distance away from one of my possible moves, disable move.
+  /* Avoid loser snake heads that are adjacent to possible moves. */
+  // If losersnake's head is 1 distance away from one of my possible moves, disable move.
+  // @todo update logic to check if I am stronger than snake first before avoiding.
   let loserSnakes = gameState.board.snakes.map((snake) => snake.head);
-  console.log(`snake head locations`);
-  console.log(loserSnakes);
-
   for (let i = 0; i < loserSnakes.length; i++) {
     for (const direction in moveLookAhead) {
       // Exclude my own head from calculations.
       if (JSON.stringify(loserSnakes[i]) === JSON.stringify(myHead)) {
         continue;
       }
-      // Find distance from possible move to loser snake's head.
+      // Find distance from possible move to losersnake's head.
       let xDistFrom = Math.abs(moveLookAhead[direction].x - loserSnakes[i].x);
       if (xDistFrom > gameState.board.width / 2) {
         xDistFrom = gameState.board.width - xDistFrom;
@@ -107,7 +105,6 @@ function move(gameState) {
   }
 
   /* Don't collide with others. */
-  // Use information in gameState to prevent your Battlesnake from colliding with others.
   loserSnakes = gameState.board.snakes.map((snake) => snake.body);
   for (let snakeParts of loserSnakes) {
     for (let i = 0; i < snakeParts.length; i++) {
@@ -122,6 +119,10 @@ function move(gameState) {
     }
   }
 
+  console.log(`after don't hit others logic`);
+  console.log(possibleMoves);
+  console.log(numberOfEnabledMoves());
+
   /* Avoid hazard sauce. */
   if (numberOfEnabledMoves() > 1) {
     const hazards = gameState.board.hazards;
@@ -129,7 +130,7 @@ function move(gameState) {
       for (const direction in moveLookAhead) {
         if (
           JSON.stringify(hazards[i]) ===
-            JSON.stringify(moveLookAhead[direction]) &&
+          JSON.stringify(moveLookAhead[direction]) &&
           numberOfEnabledMoves() > 1
         ) {
           possibleMoves[direction] = false;
@@ -137,6 +138,10 @@ function move(gameState) {
       }
     }
   }
+
+  console.log(`after avoid hazard logic`);
+  console.log(possibleMoves);
+  console.log(numberOfEnabledMoves());
 
   /* Find food */
   // Use information in gameState to seek out and find food.
