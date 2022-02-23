@@ -202,16 +202,16 @@ function move(gameState) {
     const closestFood = food[0];
     const leftOrRight = myHead.x - closestFood.x;
     const topOrBottom = myHead.y - closestFood.y;
-    if (leftOrRight >= 0) {
+    if (leftOrRight > 0) {
       possibleMoves.right = false;
-    } else {
+    } else if (leftOrRight < 0) {
       possibleMoves.left = false;
     }
 
     if (numberOfEnabledMoves() > 1) {
-      if (topOrBottom >= 0) {
+      if (topOrBottom > 0) {
         possibleMoves.up = false;
-      } else {
+      } else if (topOrBottom < 0) {
         possibleMoves.down = false;
       }
     }
