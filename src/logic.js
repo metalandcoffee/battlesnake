@@ -90,6 +90,8 @@ function move(gameState) {
   let tmp = {};
   for (let i = 0; i < loserSnakes.length; i++) {
     for (const direction in moveLookAhead) {
+      console.log(loserSnakes[i]);
+      console.log(moveLookAhead[direction]);
       // Find distance from possible move to loser snake's head.
       let xDistFrom = Math.abs(moveLookAhead[direction].x - loserSnakes[i].x);
       if (xDistFrom > gameState.board.width / 2) {
