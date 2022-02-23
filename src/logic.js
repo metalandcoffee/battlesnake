@@ -149,14 +149,8 @@ function move(gameState) {
 
   // If there is food and there is more than 1 possible move enabled...
   if (food.length > 0 && numberOfEnabledMoves() > 1) {
-    console.log(`before find food logic`);
-    console.log(`food`);
-    console.log(food);
-
     // Filter out food in hazard sauce.
     const hazards = gameState.board.hazards;
-    console.log(`hazards`);
-    console.log(hazards);
     if (0 !== hazards.length) {
       food = food.filter((snack) => {
         for (let i = 0; i < hazards.length; i++) {
@@ -167,9 +161,6 @@ function move(gameState) {
         }
       });
     }
-
-    console.log(`safe food`);
-    console.log(food);
 
     // if (safeFood.length !== 0) {
     //   food = safeFood;
@@ -206,8 +197,6 @@ function move(gameState) {
       const bDistanceToMe = xDistFromB + yDistFromB;
       return aDistanceToMe - bDistanceToMe;
     });
-
-    //console.log(tmp);
 
     // Get closest food and disable moves as needed.
     const closestFood = food[0];
