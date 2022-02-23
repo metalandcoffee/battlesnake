@@ -114,6 +114,10 @@ function move(gameState) {
 
   // If there is food and there is more than 1 possible move enabled...
   if (food.length > 0 && numberOfEnabledMoves() > 1) {
+    console.log(`before find food logic`);
+    console.log(`food`);
+    console.log(food);
+    let tmp = {};
     // Sort all food from closest to furthest.
     food.sort((a, b) => {
       // Find total steps needed from myHead to aFood and to bFood. This is logic specifically trailored for Wrapped mode.
@@ -138,10 +142,15 @@ function move(gameState) {
         yDistFromB = gameState.board.height / 2 - yDistFromB;
       }
 
+      tmp[JSON.stringify(a)] = { x: xDistFromA, y: yDistFromA };
+      tmp[JSON.stringify(b)] = { x: xDistFromB, y: yDistFromB };
+
       const aDistanceToMe = xDistFromA + yDistFromA;
       const bDistanceToMe = xDistFromB + yDistFromB;
       return aDistanceToMe - bDistanceToMe;
     });
+
+    console.log(tmp);
 
     // Get closest food and disable moves as needed.
     const closestFood = food[0];
@@ -194,7 +203,9 @@ function move(gameState) {
     move: safeMoves[Math.floor(Math.random() * safeMoves.length)],
   };
 
-  console.log(`${gameState.game.id} MOVE ${gameState.turn}: ${response.move}`);
+  console.log(
+    `${gameState.game.id} MOVE ${gameState.turn + 1}: ${response.move}`
+  );
   // console.log(gameState.board);
   // console.log(gameState.you.head);
   //console.log(moveLookAhead)
