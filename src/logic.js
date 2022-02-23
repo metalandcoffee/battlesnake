@@ -82,6 +82,10 @@ function move(gameState) {
     }
   }
 
+  console.log(`after dont hit yourself logic`);
+  console.log(possibleMoves);
+  console.log(numberOfEnabledMoves());
+
   /* Avoid loser snake heads that are adjacent to possible moves... */
   // If loser snakehead is 1 distance away from one of my possible moves, disable move.
   let loserSnakes = gameState.board.snakes.map((snake) => snake.head);
@@ -97,15 +101,18 @@ function move(gameState) {
         yDistFrom = gameState.board.height - yDistFrom;
       }
       const distFrom = xDistFrom + yDistFrom;
+
+      tmp[JSON.stringify(loserSnakes[i])] = { x: xDistFrom, y: yDistFrom };
       if (distFrom < 2) {
         possibleMoves[direction] = false;
       }
     }
   }
 
-  // console.log(`after don't hit yourself logic`);
-  // console.log(possibleMoves);
-  // console.log(numberOfEnabledMoves());
+  console.log(tmp);
+  console.log(`after avoid possible head-to-head logic`);
+  console.log(possibleMoves);
+  console.log(numberOfEnabledMoves());
 
   /* Don't collide with others. */
   // Use information in gameState to prevent your Battlesnake from colliding with others.
