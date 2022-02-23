@@ -41,6 +41,7 @@ function move(gameState) {
     right: { x: myHead.x + 1, y: myHead.y },
   };
 
+  console.log(myHead);
   console.log(moveLookAhead);
 
   /* Don't let your Battlesnake move back on its own neck */
