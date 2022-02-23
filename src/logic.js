@@ -108,6 +108,25 @@ function move(gameState) {
   // console.log(possibleMoves);
   // console.log(numberOfEnabledMoves());
 
+  /* Avoid hazard sauce. */
+  if (numberOfEnabledMoves() > 1) {
+    const hazards = gameState.board.hazards;
+    for (let i = 0; i < hazards.length; i++) {
+      for (const direction in moveLookAhead) {
+        if (
+          JSON.stringify(hazards[i]) ===
+          JSON.stringify(moveLookAhead[direction])
+        ) {
+          possibleMoves[direction] = false;
+        }
+      }
+    }
+  }
+
+  console.log(`after avoid hazard sauce logic`);
+  console.log(possibleMoves);
+  console.log(numberOfEnabledMoves());
+
   /* Find food */
   // Use information in gameState to seek out and find food.
   let food = gameState.board.food;
@@ -193,24 +212,6 @@ function move(gameState) {
     console.log(numberOfEnabledMoves());
   }
 
-  /* Avoid hazard sauce. */
-  if (numberOfEnabledMoves() > 1) {
-    const hazards = gameState.board.hazards;
-    for (let i = 0; i < hazards.length; i++) {
-      for (const direction in moveLookAhead) {
-        if (
-          JSON.stringify(hazards[i]) ===
-          JSON.stringify(moveLookAhead[direction])
-        ) {
-          possibleMoves[direction] = false;
-        }
-      }
-    }
-  }
-
-  console.log(`after avoid hazard sauce logic`);
-  console.log(possibleMoves);
-  console.log(numberOfEnabledMoves());
   // TODO: Step 5 - Select a move to make based on strategy, rather than random.
   const safeMoves = Object.keys(possibleMoves).filter(
     (key) => possibleMoves[key]
