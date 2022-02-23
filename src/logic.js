@@ -84,7 +84,7 @@ function move(gameState) {
 
   /* Avoid loser snake heads that are adjacent to possible moves... */
   // If loser snakehead is 1 distance away from one of my possible moves, disable move.
-  const loserSnakes = gameState.board.snakes.map((snake) => snake.head);
+  let loserSnakes = gameState.board.snakes.map((snake) => snake.head);
   for (let i = 0; i < loserSnakes.length; i++) {
     for (const direction in moveLookAhead) {
       // Find distance from possible move to loser snake's head.
@@ -109,7 +109,7 @@ function move(gameState) {
 
   /* Don't collide with others. */
   // Use information in gameState to prevent your Battlesnake from colliding with others.
-  const loserSnakes = gameState.board.snakes.map((snake) => snake.body);
+  loserSnakes = gameState.board.snakes.map((snake) => snake.body);
   for (let snakeParts of loserSnakes) {
     for (let i = 0; i < snakeParts.length; i++) {
       for (const direction in moveLookAhead) {
