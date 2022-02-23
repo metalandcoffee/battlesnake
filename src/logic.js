@@ -75,6 +75,13 @@ function move(gameState) {
         possibleMoves[direction] = false;
       }
 
+      // If body part is my head, skip.
+      if (
+        JSON.stringify(myBody[i]) === JSON.stringify(myHead)
+      ) {
+        continue
+      }
+
       // Find distance from possible move to current body part. If distance is less than 2 squares away, disable move.
       let xDistFrom = Math.abs(moveLookAhead[direction].x - myBody[i].x);
       if (xDistFrom > gameState.board.width / 2) {
