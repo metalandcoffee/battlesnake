@@ -53,8 +53,8 @@ function move(gameState) {
     },
   };
 
-  console.log(myHead);
-  console.log(moveLookAhead);
+  // console.log(myHead);
+  // console.log(moveLookAhead);
 
   /* Don't let your Battlesnake move back on its own neck */
   if (myNeck.x < myHead.x) {
@@ -67,9 +67,9 @@ function move(gameState) {
     possibleMoves.up = false;
   }
 
-  console.log(`after don't move back on your neck logic`);
-  console.log(possibleMoves);
-  console.log(numberOfEnabledMoves());
+  // console.log(`after don't move back on your neck logic`);
+  // console.log(possibleMoves);
+  // console.log(numberOfEnabledMoves());
 
   /* Don't hit yourself. */
   // Use information in gameState to prevent your Battlesnake from colliding with itself.
@@ -84,9 +84,9 @@ function move(gameState) {
     }
   }
 
-  console.log(`after don't hit yourself logic`);
-  console.log(possibleMoves);
-  console.log(numberOfEnabledMoves());
+  // console.log(`after don't hit yourself logic`);
+  // console.log(possibleMoves);
+  // console.log(numberOfEnabledMoves());
 
   /* Don't collide with others. */
   // Use information in gameState to prevent your Battlesnake from colliding with others.
@@ -104,28 +104,9 @@ function move(gameState) {
     }
   }
 
-  console.log(`after don't hit others logic`);
-  console.log(possibleMoves);
-  console.log(numberOfEnabledMoves());
-
-  /* Avoid hazard sauce. */
-  if (numberOfEnabledMoves() > 1) {
-    const hazards = gameState.board.hazards;
-    for (let i = 0; i < hazards.length; i++) {
-      for (const direction in moveLookAhead) {
-        if (
-          JSON.stringify(hazards[i]) ===
-          JSON.stringify(moveLookAhead[direction])
-        ) {
-          possibleMoves[direction] = false;
-        }
-      }
-    }
-  }
-
-  console.log(`after avoid hazard sauce logic`);
-  console.log(possibleMoves);
-  console.log(numberOfEnabledMoves());
+  // console.log(`after don't hit others logic`);
+  // console.log(possibleMoves);
+  // console.log(numberOfEnabledMoves());
 
   /* Find food */
   // Use information in gameState to seek out and find food.
@@ -179,9 +160,30 @@ function move(gameState) {
         possibleMoves.down = false;
       }
     }
+    console.log(`after find food logic`);
+    console.log(`food`);
+    console.log(food);
+    console.log(`possible moves`);
+    console.log(possibleMoves);
+    console.log(numberOfEnabledMoves());
   }
 
-  console.log(`after find food logic`);
+  /* Avoid hazard sauce. */
+  if (numberOfEnabledMoves() > 1) {
+    const hazards = gameState.board.hazards;
+    for (let i = 0; i < hazards.length; i++) {
+      for (const direction in moveLookAhead) {
+        if (
+          JSON.stringify(hazards[i]) ===
+          JSON.stringify(moveLookAhead[direction])
+        ) {
+          possibleMoves[direction] = false;
+        }
+      }
+    }
+  }
+
+  console.log(`after avoid hazard sauce logic`);
   console.log(possibleMoves);
   console.log(numberOfEnabledMoves());
   // TODO: Step 5 - Select a move to make based on strategy, rather than random.
