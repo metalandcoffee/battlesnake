@@ -110,7 +110,7 @@ function move(gameState) {
 
   /* Find food */
   // Use information in gameState to seek out and find food.
-  const food = gameState.board.food;
+  let food = gameState.board.food;
 
   // If there is food and there is more than 1 possible move enabled...
   if (food.length > 0 && numberOfEnabledMoves() > 1) {
