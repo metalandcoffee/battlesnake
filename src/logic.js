@@ -54,6 +54,10 @@ function move(gameState) {
     possibleMoves.up = false;
   }
 
+  console.log(`after don't move back on your neck logic`);
+  console.log(possibleMoves);
+  console.log(numberOfEnabledMoves());
+
   /* Don't hit yourself. */
   // Use information in gameState to prevent your Battlesnake from colliding with itself.
   const myBody = gameState.you.body;
