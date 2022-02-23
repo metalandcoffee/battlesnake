@@ -74,31 +74,6 @@ function move(gameState) {
       ) {
         possibleMoves[direction] = false;
       }
-
-      // If body part is my head, skip.
-      if (
-        JSON.stringify(myBody[i]) === JSON.stringify(myHead)
-      ) {
-        continue
-      }
-
-      // Find distance from possible move to current body part. If distance is less than 2 squares away, disable move.
-      let xDistFrom = Math.abs(moveLookAhead[direction].x - myBody[i].x);
-      if (xDistFrom > gameState.board.width / 2) {
-        xDistFrom = gameState.board.width - xDistFrom;
-      }
-      let yDistFrom = Math.abs(moveLookAhead[direction].y - myBody[i].y);
-      if (yDistFrom > gameState.board.height / 2) {
-        yDistFrom = gameState.board.height - yDistFrom;
-      }
-      console.log(myBody[i])
-      console.log(`xDistFrom ${xDistFrom}`)
-      console.log(`yDistFrom ${yDistFrom}`)
-      const distFrom = xDistFrom + yDistFrom;
-
-      if (distFrom < 2) {
-        possibleMoves[direction] = false;
-      }
     }
   }
 
