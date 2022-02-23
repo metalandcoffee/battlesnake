@@ -100,7 +100,6 @@ function move(gameState) {
       }
       const distFrom = xDistFrom + yDistFrom;
 
-      tmp[JSON.stringify(loserSnakes[i])] = { x: xDistFrom, y: yDistFrom };
       if (distFrom < 2) {
         possibleMoves[direction] = false;
       }
