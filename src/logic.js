@@ -149,16 +149,19 @@ function move(gameState) {
     console.log(food);
 
     // Filter out food in hazard sauce.
-    food = food.filter((snack) => {
-      const hazards = gameState.board.hazards;
-      console.log(hazards);
-      for (let i = 0; i < hazards.length; i++) {
-        if (JSON.stringify(hazards[i]) === JSON.stringify(snack)) {
+    const hazards = gameState.board.hazards;
+    console.log(`hazards`);
+    console.log(hazards);
+    if (0 !== hazards.length) {
+      food = food.filter((snack) => {
+        for (let i = 0; i < hazards.length; i++) {
+          if (JSON.stringify(hazards[i]) === JSON.stringify(snack)) {
+            return false;
+          }
           return true;
         }
-        return false;
-      }
-    });
+      });
+    }
 
     console.log(`safe food`);
     console.log(food);
