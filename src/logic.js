@@ -35,10 +35,22 @@ function move(gameState) {
   }
 
   let moveLookAhead = {
-    up: { x: myHead.x, y: myHead.y + 1 },
-    down: { x: myHead.x, y: myHead.y - 1 },
-    left: { x: myHead.x - 1, y: myHead.y },
-    right: { x: myHead.x + 1, y: myHead.y },
+    up: {
+      x: myHead.x,
+      y: myHead.y + 1 === gameState.board.height ? 0 : myHead.y + 1,
+    },
+    down: {
+      x: myHead.x,
+      y: myHead.y - 1 === -1 ? gameState.board.height - 1 : myHead.y - 1,
+    },
+    left: {
+      x: myHead.x - 1 === -1 ? gameState.board.height - 1 : myHead.x - 1,
+      y: myHead.y,
+    },
+    right: {
+      x: myHead.x + 1 === gameState.board.height ? 0 : myHead.x + 1,
+      y: myHead.y,
+    },
   };
 
   console.log(myHead);
