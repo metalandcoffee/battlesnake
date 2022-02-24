@@ -5,12 +5,12 @@ function createGameState(myBattlesnake) {
         game: {
             id: "",
             ruleset: { name: "", version: "" },
-            timeout: 0
+            timeout: 0,
         },
         turn: 0,
         board: {
-            height: 0,
-            width: 0,
+            height: 11,
+            width: 11,
             food: [],
             snakes: [myBattlesnake],
             hazards: []
@@ -34,13 +34,15 @@ function createBattlesnake(id, bodyCoords) {
 }
 
 describe('Battlesnake API Version', () => {
+
     test('should be api version 1', () => {
         const result = info()
         expect(result.apiversion).toBe("1")
     })
+
 })
 
-describe('Battlesnake Moves', () => {
+describe('Battlesnake Basic Survival', () => {
     test('should never move into its own neck', () => {
         // Arrange
         const me = createBattlesnake("me", [{ x: 2, y: 0 }, { x: 1, y: 0 }, { x: 0, y: 0 }])
@@ -52,6 +54,71 @@ describe('Battlesnake Moves', () => {
             // In this state, we should NEVER move left.
             const allowedMoves = ["up", "down", "right"]
             expect(allowedMoves).toContain(moveResponse.move)
+        }
+    })
+
+    test(`Doesn't run into walls in non-wrapped games, but is free to move into them during wrapped`, () => {
+        const me = createBattlesnake("me", [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 2, y: 0 }])
+        const gameState = createGameState(me)
+
+        for (let i = 0; i < 1000; i++) {
+            const moveResponse = move(gameState)
+            expect(moveResponse.move).toEqual("up");
+        }
+
+        gameState.game.ruleset.name === "wrapped"
+        for (let i = 0; i < 1000; i++) {
+            const moveResponse = move(gameState)
+            const allowedMoves = ["up", "down", "left"];
+            expect(allowedMoves.includes(moveResponse
+                .move)).toEqual(true);
+        }
+    })
+
+    test(`Knows moving into tail is safe`, () => {
+        const me = createBattlesnake("me", [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 2, y: 0 }, { x: 2, y: 1 }, { x: 1, y: 1 }, { x: 0, y: 1 }])
+        const gameState = createGameState(me)
+        for (let i = 0; i < 100; i++) {
+            const moveResponse = move(gameState)
+            expect(moveResponse.move).toEqual("up");
+        }
+    })
+
+    test(`Won't collide with own body`, () => {
+        const me = createBattlesnake("me", [{ x: 1, y: 0 }, { x: 2, y: 0 }, { x: 2, y: 1 }, { x: 1, y: 1 }, { x: 0, y: 1 }])
+        const gameState = createGameState(me)
+        for (let i = 0; i < 100; i++) {
+            const moveResponse = move(gameState)
+            expect(moveResponse.move).toEqual("left");
+        }
+    })
+
+    test(`Won't collide with other snakes`, () => {
+        const me = createBattlesnake("me", [{ x: 1, y: 16 }, { x: 1, y: 15 }, { x: 1, y: 14 }])
+        const other = createBattlesnake("other", [{ x: 1, y: 17 }, { x: 2, y: 17 }, { x: 3, y: 17 }])
+        const gameState = createGameState(me)
+        gameState.board.snakes.push(other)
+        for (let i = 0; i < 100; i++) {
+            const moveResponse = move(gameState)
+            const didntGoUp = moveResponse.move !== "up"
+            expect(didntGoUp).toEqual(true);
+        }
+    })
+
+    test(`Won't collide with other snakes in wrapped mode`, () => {
+        const me = createBattlesnake("me", [{ x: 2, y: 0 }, { x: 3, y: 0 }, { x: 4, y: 0 }])
+        const other = createBattlesnake("other", [{ x: 2, y: 18 }, { x: 3, y: 18 }, { x: 4, y: 18 }])
+        const gameState = createGameState(me)
+        gameState.board.width = 19;
+        gameState.board.height = 19;
+        gameState.game.ruleset.name = 'wrapped';
+        gameState.board.snakes.push(other)
+
+        for (let i = 0; i < 100; i++) {
+            const moveResponse = move(gameState)
+            const allowedMoves = ["up", "left"];
+            expect(allowedMoves.includes(moveResponse
+                .move)).toEqual(true);
         }
     })
 })
