@@ -218,8 +218,17 @@ function move(gameState) {
 
     // Get closest food and disable moves as needed.
     const closestFood = food[0];
-    const leftOrRight = myHead.x - closestFood.x;
-    const topOrBottom = myHead.y - closestFood.y;
+    let leftOrRight = myHead.x - closestFood.x;
+    let upOrDown = myHead.y - closestFood.y;
+
+    if (gameState.game.ruleset.name === 'wrapped') {
+      if (Math.abs(upOrDown) > gameState.board.height / 2) {
+        upOrDown *= -1;
+      }
+      if (Math.abs(leftOrRight) > gameState.board.width / 2) {
+        leftOrRight *= -1;
+      }
+    }
 
     if (leftOrRight === 0) {
       possibleMoves.right = false;
@@ -233,14 +242,14 @@ function move(gameState) {
     }
 
     if (numberOfEnabledMoves() > 1) {
-      if (topOrBottom === 0) {
+      if (upOrDown === 0) {
         possibleMoves.up = false;
         if (numberOfEnabledMoves() > 1) {
           possibleMoves.down = false;
         }
-      } else if (topOrBottom > 0) {
+      } else if (upOrDown > 0) {
         possibleMoves.up = false;
-      } else if (topOrBottom < 0) {
+      } else if (upOrDown < 0) {
         possibleMoves.down = false;
       }
     }
