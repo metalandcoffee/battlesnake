@@ -161,6 +161,7 @@ describe('Battlesnake Basic Survival', () => {
             { x: 3, y: 0 },
             { x: 4, y: 0 },
         ]);
+        //me.health = 100;
         const gameState = createGameState(me);
         gameState.board.food = [{ x: 2, y: 1 }];
         for (let i = 0; i < 100; i++) {

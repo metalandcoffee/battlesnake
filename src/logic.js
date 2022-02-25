@@ -24,6 +24,7 @@ function move(gameState) {
   const myHead = gameState.you.head;
   const myNeck = gameState.you.body[1];
 
+
   let possibleMoves = {
     up: true,
     down: true,
@@ -158,8 +159,6 @@ function move(gameState) {
   /* Turn off possible moves where the surrounding spaces are all blocked */
   for (direction in surroundingSpaces) {
     const isAllBlocked = surroundingSpaces[direction].filter(space => space.isBlocked === false);
-    // console.log(surroundingSpaces[direction])
-    // console.log(isAllBlocked)
     if (0 === isAllBlocked.length) {
       possibleMoves[direction] = false;
     }
@@ -213,10 +212,11 @@ function move(gameState) {
   /* Find food */
   // Use information in gameState to seek out and find food.
   let food = gameState.board.food;
-
-  // If there is food and there is more than 1 possible move enabled...
-  if (food.length > 0 && numberOfEnabledMoves() > 1) {
-    // Filter out food in hazard sauce.
+  const maxHealth = 100;
+  const minHealthPercentage = 50;
+  // If health is less than 50% and there is food and there is more than 1 possible move enabled...
+  if (gameState.you.health < (maxHealth * (minHealthPercentage / 100)) && food.length > 0 && numberOfEnabledMoves() > 1) {
+    // Filter out food in hazard sauce. (Ignore food in hazard sauce)
     const hazards = gameState.board.hazards;
     if (0 !== hazards.length) {
       food = food.filter((snack) => {
