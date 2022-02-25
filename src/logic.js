@@ -73,6 +73,29 @@ function move(gameState) {
     return baseDirection;
   }
 
+  const surroundingSpaces = {
+    up: [
+      { x: moveLookAhead(myHead, 'up').x - 1, y: moveLookAhead(myHead, 'up').y, isBlocked: false },
+      { x: moveLookAhead(myHead, 'up').x, y: moveLookAhead(myHead, 'up').y + 1, isBlocked: false },
+      { x: moveLookAhead(myHead, 'up').x + 1, y: moveLookAhead(myHead, 'up').y, isBlocked: false }
+    ],
+    down: [
+      { x: moveLookAhead(myHead, 'down').x - 1, y: moveLookAhead(myHead, 'down').y, isBlocked: false },
+      { x: moveLookAhead(myHead, 'down').x, y: moveLookAhead(myHead, 'down').y - 1, isBlocked: false },
+      { x: moveLookAhead(myHead, 'down').x + 1, y: moveLookAhead(myHead, 'down').y, isBlocked: false }
+    ],
+    left: [
+      { x: moveLookAhead(myHead, 'left').x, y: moveLookAhead(myHead, 'left').y + 1, isBlocked: false },
+      { x: moveLookAhead(myHead, 'left').x - 1, y: moveLookAhead(myHead, 'left').y, isBlocked: false },
+      { x: moveLookAhead(myHead, 'left').x, y: moveLookAhead(myHead, 'left').y - 1, isBlocked: false }
+    ],
+    right: [
+      { x: moveLookAhead(myHead, 'right').x, y: moveLookAhead(myHead, 'right').y + 1, isBlocked: false },
+      { x: moveLookAhead(myHead, 'right').x + 1, y: moveLookAhead(myHead, 'right').y, isBlocked: false },
+      { x: moveLookAhead(myHead, 'right').x, y: moveLookAhead(myHead, 'right').y - 1, isBlocked: false }
+    ],
+  };
+
   /* Don't let your Battlesnake move back on its own neck */
   if (myNeck.x < myHead.x) {
     possibleMoves.left = false;
@@ -83,6 +106,7 @@ function move(gameState) {
   } else if (myNeck.y > myHead.y) {
     possibleMoves.up = false;
   }
+
   //https://docs.battlesnake.com/references/api/sample-move-request
   /* Don't hit the walls */
   if ('wrapped' !== gameState.game.ruleset.name) {
@@ -108,18 +132,36 @@ function move(gameState) {
 
   /* Don't hit yourself or others. */
   // Use information in gameState to prevent your Battlesnake from colliding with itself.
-
+  /* Eliminate possible moves that lead to dead ends */
   for (const snake of gameState.board.snakes) {
     for (let i = 0; i < snake.length - 1; i++) {
       for (const direction of directions) {
         if (
-          //  {x:0,y:0} {y:0,x:0} properties aren't always in the same order.. update
-          JSON.stringify(snake.body[i]) ===
-          JSON.stringify(moveLookAhead(myHead, direction))
+          snake.body[i].x === moveLookAhead(myHead, direction).x &&
+          snake.body[i].y === moveLookAhead(myHead, direction).y
         ) {
           possibleMoves[direction] = false;
         }
+
+        for (const space of surroundingSpaces[direction]) {
+          if (
+            snake.body[i].x === space.x &&
+            snake.body[i].y === space.y
+          ) {
+            space.isBlocked = true;
+          }
+        }
       }
+    }
+  }
+
+  /* Turn off possible moves where the surrounding spaces are all blocked */
+  for (direction in surroundingSpaces) {
+    const isAllBlocked = surroundingSpaces[direction].filter(space => space.isBlocked === false);
+    // console.log(surroundingSpaces[direction])
+    // console.log(isAllBlocked)
+    if (0 === isAllBlocked.length) {
+      possibleMoves[direction] = false;
     }
   }
 
@@ -159,7 +201,7 @@ function move(gameState) {
       for (const direction of directions) {
         if (
           JSON.stringify(hazards[i]) ===
-            JSON.stringify(moveLookAhead(myHead, direction)) &&
+          JSON.stringify(moveLookAhead(myHead, direction)) &&
           numberOfEnabledMoves() > 1
         ) {
           possibleMoves[direction] = false;
