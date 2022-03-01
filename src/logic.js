@@ -212,10 +212,10 @@ function move(gameState) {
   /* Find food */
   // Use information in gameState to seek out and find food.
   let food = gameState.board.food;
-  const maxHealth = 100;
-  const minHealthPercentage = 90;
+  // const maxHealth = 100;
+  // const minHealthPercentage = 90;
   // If health is less than 50% and there is food and there is more than 1 possible move enabled...
-  if (gameState.you.health < (maxHealth * (minHealthPercentage / 100)) && food.length > 0 && numberOfEnabledMoves() > 1) {
+  if ( food.length > 0 && numberOfEnabledMoves() > 1 ) {
     // Filter out food in hazard sauce. (Ignore food in hazard sauce)
     const hazards = gameState.board.hazards;
     if (0 !== hazards.length) {
