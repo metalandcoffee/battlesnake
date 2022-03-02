@@ -1,4 +1,9 @@
-const { info, move } = require('../src/logic');
+const { info,
+    move,
+    isCollidedWithSnakes,
+    paintBucketFill,
+    isOutOfBounds
+} = require('../src/logic');
 
 function createGameState(myBattlesnake) {
     return {
@@ -203,4 +208,120 @@ describe('Battlesnake Basic Survival', () => {
             expect(allowedMoves.includes(moveResponse.move)).toEqual(true);
         }
     });
+
+    test(`Avoid other snakes (isolated function check)`, () => {
+        const me = createBattlesnake('me', [
+            { x: 1, y: 16 },
+            { x: 1, y: 15 },
+            { x: 1, y: 14 },
+        ]);
+        const other = createBattlesnake('other', [
+            { x: 1, y: 17 },
+            { x: 2, y: 17 },
+            { x: 3, y: 17 },
+        ]);
+        const gameState = createGameState(me);
+        gameState.board.snakes.push(other);
+        for (let i = 0; i < 100; i++) {
+            expect(isCollidedWithSnakes({ x: 1, y: 17 },gameState,0)).toEqual(true);
+        }
+    })
+
+    
+    test(`Avoid other snakes (isolated function check)`, () => {
+        const me = createBattlesnake('me', [
+            { x: 1, y: 16 },
+            { x: 1, y: 15 },
+            { x: 1, y: 14 },
+        ]);
+        const other = createBattlesnake('other', [
+            { x: 1, y: 17 },
+            { x: 2, y: 17 },
+            { x: 3, y: 17 },
+        ]);
+        const gameState = createGameState(me);
+        gameState.board.snakes.push(other);
+        for (let i = 0; i < 100; i++) {
+            expect(isCollidedWithSnakes({ x: 0, y: 17 },gameState,0)).toEqual(false);
+        }
+    })
+
+    test(`Avoid other snakes EXCEPT tail (isolated function check)`, () => {
+        const me = createBattlesnake('me', [
+            { x: 1, y: 16 },
+            { x: 1, y: 15 },
+            { x: 1, y: 14 },
+        ]);
+        const other = createBattlesnake('other', [
+            { x: 1, y: 17 },
+            { x: 2, y: 17 },
+            { x: 3, y: 17 },
+        ]);
+        const gameState = createGameState(me);
+        gameState.board.snakes.push(other);
+        for (let i = 0; i < 100; i++) {
+            expect(isCollidedWithSnakes({ x: 3, y: 17 },gameState,1)).toEqual(false);
+        }
+    })
+
+    test('Is coord out of bounds', () => {
+        const me = createBattlesnake('me', [
+            { x: 2, y: 0 },
+            { x: 2, y: 1 },
+            { x: 2, y: 2 },
+            { x: 1, y: 2 },
+            { x: 0, y: 2 },
+        ]);
+        const gameState = createGameState(me);
+        expect(isOutOfBounds({x:1,y:0},gameState)).toEqual(false);
+        expect(isOutOfBounds({x:-1,y:0},gameState)).toEqual(true);
+        expect(isOutOfBounds({x:20,y:0},gameState)).toEqual(true);
+        expect(isOutOfBounds({x:0,y:-2},gameState)).toEqual(true);
+        expect(isOutOfBounds({x:0,y:20},gameState)).toEqual(true);
+    })
+
+    test(`Check paint bucket fill tight space`, () => {
+        const me = createBattlesnake('me', [
+            { x: 2, y: 0 },
+            { x: 2, y: 1 },
+            { x: 2, y: 2 },
+            { x: 1, y: 2 },
+            { x: 0, y: 2 }, 
+            { x: 0, y: 3 }, 
+            { x: 0, y: 4 }, 
+            { x: 0, y: 5 }, 
+            { x: 0, y: 6 }, 
+            { x: 0, y: 7 }, 
+            { x: 0, y: 8 }, 
+        ]);
+        const gameState = createGameState(me);
+        expect(paintBucketFill({x:1,y:0},gameState)).toEqual(4);
+    })
+
+    test(`Check paint bucket fill large space`, () => {
+        const me = createBattlesnake('me', [
+            { x: 2, y: 0 },
+            { x: 2, y: 1 },
+            { x: 2, y: 2 },
+            { x: 1, y: 2 },
+            { x: 0, y: 2 },
+        ]);
+        const gameState = createGameState(me);
+        expect(paintBucketFill({x:3,y:0},gameState)).toEqual(121);
+    })
+
+    
+    test(`Check paint bucket fill large space, differing board dimensions`, () => {
+        const me = createBattlesnake('me', [
+            { x: 2, y: 0 },
+            { x: 2, y: 1 },
+            { x: 2, y: 2 },
+            { x: 1, y: 2 },
+            { x: 0, y: 2 },
+        ]);
+        const gameState = createGameState(me);
+        gameState.board.height = 10;
+        gameState.board.width = 10;
+        expect(paintBucketFill({x:3,y:0},gameState)).toEqual(100);
+    })
 });

@@ -37,66 +37,6 @@ function move(gameState) {
       .length;
   }
 
-  function moveLookAhead(snakeHead, direction) {
-    const baseDirections = {
-      up: {
-        x: snakeHead.x,
-        y: snakeHead.y + 1,
-      },
-      down: {
-        x: snakeHead.x,
-        y: snakeHead.y - 1,
-      },
-      left: {
-        x: snakeHead.x - 1,
-        y: snakeHead.y,
-      },
-      right: {
-        x: snakeHead.x + 1,
-        y: snakeHead.y,
-      },
-    };
-    const baseDirection = baseDirections[direction];
-
-    if (gameState.game.ruleset.name !== 'wrapped') return baseDirection;
-
-    if (gameState.board.width === baseDirection.x) {
-      baseDirection.x = 0;
-    } else if (-1 === baseDirection.x) {
-      baseDirection.x = gameState.board.width - 1;
-    }
-    if (gameState.board.height === baseDirection.y) {
-      baseDirection.y = 0;
-    } else if (-1 === baseDirection.y) {
-      baseDirection.y = gameState.board.height - 1;
-    }
-
-    return baseDirection;
-  }
-
-  const surroundingSpaces = {
-    up: [
-      { x: moveLookAhead(myHead, 'up').x - 1, y: moveLookAhead(myHead, 'up').y, isBlocked: false },
-      { x: moveLookAhead(myHead, 'up').x, y: moveLookAhead(myHead, 'up').y + 1, isBlocked: false },
-      { x: moveLookAhead(myHead, 'up').x + 1, y: moveLookAhead(myHead, 'up').y, isBlocked: false }
-    ],
-    down: [
-      { x: moveLookAhead(myHead, 'down').x - 1, y: moveLookAhead(myHead, 'down').y, isBlocked: false },
-      { x: moveLookAhead(myHead, 'down').x, y: moveLookAhead(myHead, 'down').y - 1, isBlocked: false },
-      { x: moveLookAhead(myHead, 'down').x + 1, y: moveLookAhead(myHead, 'down').y, isBlocked: false }
-    ],
-    left: [
-      { x: moveLookAhead(myHead, 'left').x, y: moveLookAhead(myHead, 'left').y + 1, isBlocked: false },
-      { x: moveLookAhead(myHead, 'left').x - 1, y: moveLookAhead(myHead, 'left').y, isBlocked: false },
-      { x: moveLookAhead(myHead, 'left').x, y: moveLookAhead(myHead, 'left').y - 1, isBlocked: false }
-    ],
-    right: [
-      { x: moveLookAhead(myHead, 'right').x, y: moveLookAhead(myHead, 'right').y + 1, isBlocked: false },
-      { x: moveLookAhead(myHead, 'right').x + 1, y: moveLookAhead(myHead, 'right').y, isBlocked: false },
-      { x: moveLookAhead(myHead, 'right').x, y: moveLookAhead(myHead, 'right').y - 1, isBlocked: false }
-    ],
-  };
-
   /* Don't let your Battlesnake move back on its own neck */
   if (myNeck.x < myHead.x) {
     possibleMoves.left = false;
@@ -109,60 +49,18 @@ function move(gameState) {
   }
 
   //https://docs.battlesnake.com/references/api/sample-move-request
-  /* Don't hit the walls */
-  if ('wrapped' !== gameState.game.ruleset.name) {
-    // If myHead.x is at the beginning of the x axis,
-    // turn off "left" as possible move.
-    if (myHead.x === 0) {
-      possibleMoves.left = false;
-      // If myHead.x is at the end of the x axis,
-      // turn off "right" as possible move.
-    } else if (myHead.x === gameState.board.width - 1) {
-      possibleMoves.right = false;
-    }
-    // If myHead.y is at the beginning of the y axis,
-    // turn off "down" as possible move.
-    if (myHead.y === 0) {
-      possibleMoves.down = false;
-      // If myHead.y is at the end of the y axis,
-      // turn off "up" as possible move.
-    } else if (myHead.y === gameState.board.height - 1) {
-      possibleMoves.up = false;
-    }
-  }
-
-  /* Don't hit yourself or others. */
-  // Use information in gameState to prevent your Battlesnake from colliding with itself.
-  /* Eliminate possible moves that lead to dead ends */
-  for (const snake of gameState.board.snakes) {
-    for (let i = 0; i < snake.length - 1; i++) {
-      for (const direction of directions) {
-        if (
-          snake.body[i].x === moveLookAhead(myHead, direction).x &&
-          snake.body[i].y === moveLookAhead(myHead, direction).y
-        ) {
-          possibleMoves[direction] = false;
-        }
-
-        for (const space of surroundingSpaces[direction]) {
-          if (
-            snake.body[i].x === space.x &&
-            snake.body[i].y === space.y
-          ) {
-            space.isBlocked = true;
-          }
-        }
-      }
-    }
-  }
-
-  /* Turn off possible moves where the surrounding spaces are all blocked */
-  for (direction in surroundingSpaces) {
-    const isAllBlocked = surroundingSpaces[direction].filter(space => space.isBlocked === false);
-    if (0 === isAllBlocked.length) {
+  /* Don't hit the walls, or other snakes,                       or enter areas where I can't fit */
+  for (const direction of directions){ 
+    const lookAheadCoords = moveLookAhead(myHead,direction, gameState);
+    const isClear = isClearSpace(lookAheadCoords,gameState, 1);
+    const numOfEmptySpaces =  paintBucketFill(lookAheadCoords, gameState);
+    const canFit = gameState.you.length < numOfEmptySpaces
+    if (!isClear || !canFit){ 
       possibleMoves[direction] = false;
     }
   }
+
+
 
   /* Avoid loser snake heads that are adjacent to possible moves. */
   // If losersnake's head is 1 distance away from one of my possible moves, disable move.
@@ -174,13 +72,13 @@ function move(gameState) {
     for (const direction of directions) {
       // Find distance from possible move to losersnake's head.
       let xDistFrom = Math.abs(
-        moveLookAhead(myHead, direction).x - loserSnakes[i].x
+        moveLookAhead(myHead, direction, gameState).x - loserSnakes[i].x
       );
       if (xDistFrom > gameState.board.width / 2) {
         xDistFrom = gameState.board.width - xDistFrom;
       }
       let yDistFrom = Math.abs(
-        moveLookAhead(myHead, direction).y - loserSnakes[i].y
+        moveLookAhead(myHead, direction, gameState).y - loserSnakes[i].y
       );
       if (yDistFrom > gameState.board.height / 2) {
         yDistFrom = gameState.board.height - yDistFrom;
@@ -200,7 +98,7 @@ function move(gameState) {
       for (const direction of directions) {
         if (
           JSON.stringify(hazards[i]) ===
-          JSON.stringify(moveLookAhead(myHead, direction)) &&
+          JSON.stringify(moveLookAhead(myHead, direction, gameState)) &&
           numberOfEnabledMoves() > 1
         ) {
           possibleMoves[direction] = false;
@@ -308,9 +206,128 @@ function move(gameState) {
   return response;
 }
 
+
+
+function moveLookAhead(coord, direction, gameState) {
+  const baseDirections = {
+    up: {
+      x: coord.x,
+      y: coord.y + 1,
+    },
+    down: {
+      x: coord.x,
+      y: coord.y - 1,
+    },
+    left: {
+      x: coord.x - 1,
+      y: coord.y,
+    },
+    right: {
+      x: coord.x + 1,
+      y: coord.y,
+    },
+  };
+
+  const newCoords = baseDirections[direction];
+
+  if (gameState.game.ruleset.name !== 'wrapped') return newCoords;
+
+  if (gameState.board.width === newCoords.x) {
+    newCoords.x = 0;
+  } else if (-1 === newCoords.x) {
+    newCoords.x = gameState.board.width - 1;
+  }
+  if (gameState.board.height === newCoords.y) {
+    newCoords.y = 0;
+  } else if (-1 === newCoords.y) {
+    newCoords.y = gameState.board.height - 1;
+  }
+
+  return newCoords;
+}
+
+
+
+
+
+function paintBucketFill(startingCoords, gameState) {
+  const queue = [startingCoords];
+  const history = {};
+  
+  let safeGuard = gameState.board.width * gameState.board.height;
+  let counter = 0;
+  while(queue.length > 0  && counter < safeGuard) {
+    const coords = queue.shift();
+    const coordsString = `${coords.x},${coords.y}`;
+    if (history[coordsString]) { 
+      continue 
+    } else {
+      history[coordsString] = true;
+    } 
+    counter++;
+
+    for (const direction of directions){ 
+      const lookAheadCoords = moveLookAhead(coords, direction, gameState);
+      const lookAheadCoordsString = `${lookAheadCoords.x},${lookAheadCoords.y}`;
+      const clear = isClearSpace(lookAheadCoords, gameState, counter)
+      if (clear && !history[lookAheadCoordsString]) { 
+        queue.push(lookAheadCoords) 
+      }
+    }
+  }
+
+  // Return number of empty spaces.
+  return Object.keys(history).length;
+}
+
+//@todo basic test for isClearSpace independently
+function isClearSpace(coords, gameState, distanceFromEndOfSnakeToStopAt = 0) {
+  const outOfBounds = isOutOfBounds(coords,gameState)
+  const collided = isCollidedWithSnakes(coords, gameState, distanceFromEndOfSnakeToStopAt);
+  return !outOfBounds && !collided
+}
+
+
+function isOutOfBounds(coords,gameState){
+  const isWrapped = "wrapped" === gameState.game.ruleset.name;
+  if (isWrapped) return false;
+
+  const height = gameState.board.height;
+  const width = gameState.board.width;
+  if (coords.x < 0 || coords.x >= width) {
+    return true;
+  } else if (coords.y < 0 || coords.y >= height) {
+    return true;
+  }
+  return false;
+ }
+
+
+ function isCollidedWithSnakes(coords,gameState,distanceFromEndOfSnakeToStopAt){
+  for (const snake of gameState.board.snakes) {
+    const body = snake.body;
+    for (let i = 0; i < body.length - distanceFromEndOfSnakeToStopAt; i++) {
+      const part = body[i];
+      if (coords.x === part.x  && coords.y === part.y) { 
+        return true
+      }
+    }
+  }
+  return false;
+ }
+
+
+
+
+
+
+
 module.exports = {
   info: info,
   start: start,
   move: move,
   end: end,
+  isCollidedWithSnakes,
+  paintBucketFill,
+  isOutOfBounds
 };
